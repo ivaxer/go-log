@@ -7,6 +7,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -35,12 +36,13 @@ var levelNames = map[Level]string{
 }
 
 type Logger struct {
+	mu  sync.Mutex
 	lvl Level
 	w   io.Writer
 }
 
 func New(lvl Level) *Logger {
-	return &Logger{lvl, os.Stderr}
+	return &Logger{lvl: lvl, w: os.Stderr}
 }
 
 func (l *Logger) print(lvl Level, args ...interface{}) {
@@ -69,6 +71,10 @@ func (l *Logger) output(lvl Level, buf []byte) {
 	}
 
 	h := l.header(lvl)
+
+	l.mu.Lock()
+	defer l.mu.Unlock()
+
 	l.w.Write(h)
 	l.w.Write(buf)
 }
