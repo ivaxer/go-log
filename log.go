@@ -17,7 +17,7 @@ import (
 type Level int32
 
 const (
-	FATAL Level = iota - 4
+	FATAL Level = iota - 3
 	ERROR
 	WARNING
 	INFO
