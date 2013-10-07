@@ -11,6 +11,9 @@ import (
 	"time"
 )
 
+// Level identifies the sort of log: error, info, debug, etc.
+// Level implements flag.Value interface and can be set via
+// user defined flag.
 type Level int32
 
 const (
@@ -24,15 +27,31 @@ const (
 	VVVDEBUG
 )
 
+func (l *Level) Set(v string) error {
+	lvlName := strings.ToLower(v)
+	for lvl, name := range levelNames {
+		if name == lvlName {
+			*l = lvl
+			return nil
+		}
+	}
+
+	return fmt.Errorf("log: unknown log level name: %q", v)
+}
+
+func (l Level) String() string {
+	return levelNames[l]
+}
+
 var levelNames = map[Level]string{
 	FATAL:    "fatal",
 	ERROR:    "error",
 	WARNING:  "warning",
 	INFO:     "info",
-	DEBUG:    "debug0",
-	VDEBUG:   "debug1",
-	VVDEBUG:  "debug2",
-	VVVDEBUG: "debug3",
+	DEBUG:    "debug",
+	VDEBUG:   "vdebug",
+	VVDEBUG:  "vvdebug",
+	VVVDEBUG: "vvvdebug",
 }
 
 type Logger struct {
