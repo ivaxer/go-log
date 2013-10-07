@@ -2,6 +2,7 @@ package log
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -12,8 +13,8 @@ import (
 )
 
 // Level identifies the sort of log: error, info, debug, etc.
-// Level implements flag.Value interface and can be set via
-// user defined flag.
+// Level implements flag.Value, json.Marshaler and json.Unmarshaler
+// interfaces and can be set via user defined flag or json unmarshaling.
 type Level int32
 
 const (
@@ -41,6 +42,19 @@ func (l *Level) Set(v string) error {
 
 func (l Level) String() string {
 	return levelNames[l]
+}
+
+func (l *Level) UnmarshalJSON(data []byte) (err error) {
+	var name string
+	if err = json.Unmarshal(data, &name); err != nil {
+		return
+	}
+
+	return l.Set(name)
+}
+
+func (l Level) MarshalJSON() ([]byte, error) {
+	return json.Marshal(levelNames[l])
 }
 
 var levelNames = map[Level]string{
