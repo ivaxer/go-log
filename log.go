@@ -234,6 +234,9 @@ func (l *Logger) Fatalf(format string, args ...interface{}) {
 // SetLevel sets log level.
 // Logs at or above this level go to log writer.
 func (l *Logger) SetLevel(lvl Level) {
+	// TODO: use atomic and change lvl inplace.
+	l.mu.Lock()
+	defer l.mu.Unlock()
 	l.lvl = lvl
 }
 
