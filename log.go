@@ -74,8 +74,8 @@ type Logger struct {
 	w   io.Writer
 }
 
-func New(lvl Level) *Logger {
-	return &Logger{lvl: lvl, w: os.Stderr}
+func New(lvl Level, w io.Writer) *Logger {
+	return &Logger{lvl: lvl, w: w}
 }
 
 func (l *Logger) print(lvl Level, args ...interface{}) {
@@ -254,7 +254,7 @@ func (l *Logger) SetLevel(lvl Level) {
 	l.lvl = lvl
 }
 
-var l = New(INFO)
+var l = New(INFO, os.Stderr)
 
 // VVVDebug logs with VVVDEBUG level.
 // Arguments are handled in the manner of fmt.Print.
